@@ -1,8 +1,13 @@
 ========================================================================
        CONSOLE APPLICATION : a_backuper
 ========================================================================
+This application copies all files from drive a: 
+into directory on drive c:
 
+It was designed in MSVC for backup a large stack of floppy disk, whose
+I have had after first ~10 years of my programmers life.
 
+========================================================================
 AppWizard has created this a_backuper application for you.  
 
 This file contains a summary of what you will find in each of the files that
