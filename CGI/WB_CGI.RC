@@ -1,0 +1,3 @@
+QUERY_STRING=entry1=BASIC&entry2=This+is+the+default.
+#&entry3=&entry5=&password=&textarea=NOTE%3A%0D%0ADefault+text+can+be+entered+here.%0D%0AITD%0D%0AITP%0D%0A%0D%0A&Checkbox2=TRUE&radio1=value2&first-menu=Second+Option&second-menu=Last+Option&hidden=invisible
+REQUEST_METHOD=GET

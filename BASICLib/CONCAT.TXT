@@ -1,0 +1,23 @@
+W celu poprawienia operacji sumowania ’a¤cuch¢w zdefiniowano funkcj‘ concat:
+	bstring concat(n,...);
+Gdzie ... oznaczaj† list‘ n argument¢w typu (bstring*) .
+	Jest ona odpowiednikiem operacji sumowania n bstring¢w, ale ze
+zminimalizowan† iložci† operacji stertowych.
+Np wyrazenie s=a+b+c+d; jest rozwijane przez kompilator C++ do:
+
+	bstring	p1(  a.operator + ( b ) ); // Zmienne tymczasowe tworzone
+	bstring p2( p1.operator + ( c ) ); //     przez konstruktory
+	bstring p3( p2.operator + ( d ) ); //         kopiuj†ce
+	s.operator = ( p2 );
+	...
+	bstring::~bstring( p1 );	// Wywo’anie destruktor¢w dla zmiennych
+	bstring::~bstring( p2 );        // zmiennych tymczasowych odbywa si‘
+	bstring::~bstring( p3 );        //     na ko¤cu bierz†cego bloku
+
+Ježli to samo wyrazenie zapiszemy jako s=concat(4,&a,&b,&c,&d); to
+zostanie ono rozwini‘te do:
+
+	s.operator = ( concat(4,&a,&b,&c,&d) );
+
+Unika si‘ w ten spos¢b tworzenia zmiennych tymczasowych i przechowywania
+ich zawartožci na stercie do momentu wyjžcia z bierz†cego bloku.

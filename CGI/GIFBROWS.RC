@@ -1,0 +1,18 @@
+#CONFIG FILE FOR GIF-BROWSER PROGRAM
+#Self path for program - Server dependent
+SELF_URL_PATH=//localhost/cgi-bin/browser
+#Global (URL) location of WWW server root directory
+SERVER_URL_PATH=//localhost
+#Location of WWW server root directory on hosts filesystem
+WWW_DOCS_PATH=/TMP
+#Location of source documents on host filesystem
+#PATH_TO_SOURCE_GIF=../../ZDJECIA
+PATH_TO_SOURCE_GIF=/LISCIE.2
+#Subdirectories for export
+PREVIEW_GIF_DIRECTORY=/preview
+FULL_GIF_DIRECTORY=/full
+#Export limits for one request
+PREVIEW_LIMIT=5
+FULL_LIMIT=1
+#Text to put into exported decuments (gifs)
+COPYRIGHT=(c)ZSiGR Warsaw University

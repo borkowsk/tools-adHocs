@@ -1,0 +1,190 @@
+ OPCJE TRANSLACJI I KOMPILACJI
+-------------------------------
+Program BAS2C pozwala programiûcie znajÜcemu wyíÜcznie BASIC na "bezbolesne"
+posíugiwanie sië kompilatorem jëzyka C++ .
+Translator BAS2C poza przetíumaczeniem kodu ¶r¢díowego BASIC'a na jeden, lub
+kilka plik¢w ¶r¢díowych C++ generuje r¢wnieß plik wsadowy síußÜcy kompilacji
+plik¢w C++. Jedyne co musi zrobiç ußytkownik ßeby uzyskaç kod wykonywalny
+z plik¢w *.cpp wygenerowanych przez translator to po zako§czeniu sesji
+translacji uruchomiç odpowiedni program wsadowy (bat).
+    Program ten wywoíuje kompilator (w obecnej wersji) bcc lub bccx, kt¢re
+przeprowadzajÜ kompilacjë i linkowanie programu. Proces ten moße trwaç
+kilkakrotnie díußej niß analogiczna operacja w kompilatorach jëzyka BASIC.
+Jest to cena jakÜ trzeba zapíaciç za efektywnoûç generowanego programu
+wynikiowego.
+	Taki spos¢b postëpowania uwalnia programistë BASIC'owego od gÜszczu
+opcji kompilatora jëzyka C++ -  niestety nie caíkowicie. Kilka opcji
+kompilatora zostaío uwzglëdnionych w menu translatora BAS2C, inne sÜ
+ustawione na staíe w plikach wsadowych generowanych przez program.
+
+  Opcje translatora
+********************
+"Indent" - Linia kodu ¶r¢díowego C++ moße zaczynaç sië z wciëciem
+	   proporcjonalnym do  poziomu zagnießdzenia aktualnego bloku.
+	   W opcji tej ustawia sië wciëcie jednostkowe, czyli dla
+	   bloku o poziomie zagíebienia 1.
+
+"Subscripts casted to size_t" - Jëzyk BASIC dopuszcza ußycie zmiennych
+	zmiennoprzecinkowych do indeksowania tablic. W jëzyku C++ powoduje
+	to bíÜd kompilacji. Moßna jednak dokonaç tzw rzutowania, czyli
+	wymusiç zmianë typu w wyraßeniu z float lub double na (size_t).
+	Czëûç uíamkowa zostanie wtedy obciëta.
+			 Jeûli ußytkownik translatora w swoich
+	programach stosuje takie indeksowania zmiennymi zmiennopozycyjnymi
+	to musi wíaczyç të opcjë.
+
+"STEP in FOR positive only" - Pëtle FOR w jëzyku BASIC nie sÜ bezpoûrednio
+	przetíumaczalne na pëtle for jëzyka C++ jeûli w czasie translacji
+	nie znamy znaku wyraßenioa okreûlajÜcego STEP .  Jeûli arbitralnie
+	przyjmiemy ße wyraßenia te sÜ zawsze dodatnie to BAS2C tíumaczy
+	pëtle FOR ... STEP na petle for(....). Jeûli natomiast dopuszczalne
+	sÜ kroki ujemne to pëtle BASIC'owe FOR tlumaczone sÜ na pëtle
+	while(...) jëzyka C++ .
+
+"FIELD strings can be printed" - W jëzyku BASIC informacje o dlugoûci
+       ía§cucha przechowywana jest w jego deskryptorze. Natomiast obszar
+       danych zawiera wyíacznie zawartoûç.
+       W jëzyku C++ funkcje ía§cuchowe operujÜ wyíacznie na tablicach
+       znakowych identyfikowanych z pomocÜ wska¶nik¢w do obszar¢w pamieci.
+       O dlugoûci íu§cucha informuje znak o kodzie 0 na jego ko§cu.
+		Implementacja bstring'¢w utrzymuje obie te konwencje -
+      dlugoûç stringu jest pamientana, a na jego ko§cu jest znak o kodzie 0.
+      Znaku tego nie ma jedynie w wypadku íancuch¢w przypisanych do bufora
+      pliku typu random. Jëûli takie ía§cuchy sÜ drukowane, nalezy przyjÜç
+      specjalny zapis instrukcji printf - zamiast :
+		printf("%s",(char*)A);
+      musi byç:
+		printf("%*s",len(A),(char*)A);
+
+"Array range checking" - w jëzyku C++ nie sÜ sprawdzane ßadne przekroczenia
+	zakres¢w. Program bíëdnie indeksujÜcy tablice w najlepszym wypadku
+	dziaía bíednie. Zazwyczaj jednak doprowadza do zawieszenia sië
+	komputera. W plikach array.hpp i matrix.hpp zdefiniowano odpowiednie
+	operatory indeksowania z kontrolÜ zakres¢w. DziaíajÜ one jednak
+	wielokrotnie wolniej niß zwykíe operatory indeksowania.
+		Opcjë të naleßy wíaczyç jeûli program tlumaczony bez niej
+	dziaía nieprawidíowo. NajprawdopodobniejszÜ przyczynÜ przekraczania
+	zakres¢w sÜ nieprawidíowo przetíumaczone pëtle programowe. Lub
+	bíëdne wartoûçi zmiennych.
+	np :
+	1)WewnÜtrz pëtli FOR... zmieniana jest wartoûç zmiennej sterujÜcej.
+	2)WystëpujÜ pëtle o kroku ujemnym przy wíÜczonej opcji "STEP in FOR
+	  positive only" .
+	3)Zmienna síußÜca do indeksowania ma dziwnÜ wartoûç - np nie zostaía
+	  przypisana.
+	4)Wastëpuje "overflow" przy obliczaniu wyrazenia indeksujÜcego.
+	5)Nastëpuje odwoíanie do tablicy dynamicznej dla kt¢rej uprzednio
+	  nie wykonano operacji dim.
+
+"Num. variables initialized with 0" - Jëzyk BASIC zawsze inicjuje zmienne
+	numeryczne wartoûciÜ 0. W wiëkszoûci program¢w nie jest to konieczne.
+	Zapisanie algorytmu w spos¢b nie zakíadajÜcy ße zmienne sÜ
+	zainicjowane i wyíÜczenie tej opcji w translatorze przynosi znaczne
+	oszczëdniûci czasu wykonania programu. Szczeg¢lnie jeûli ußywane sÜ
+	duße tablice numeryczne.
+
+
+"Large tables in small memory model" - w modelu pamiëci "small" i "medium"
+	dane programu nie mogÜ przekroczyç 64KB . Dlatego zdecydowano sië
+	w tych modelach na implementacjë tablic takÜ ße operacje sÜ
+	wykonywane szybciej, ale indeksy sÜ ograniczone do 32767.
+	Jeûli stosowane sÜ tablice wymagajÜce wiëkszych indeks¢w to naleßy
+	wíÜczyç tÜ opcjë.
+
+"Heap testing level" - Programy w jëzyku C++ nie wykonujÜ kontroli
+	poprawnoûci sterty (heap) . Moße sië jednak zdarzyç ße
+	¶le ustawione opcjë tíumaczenia, bíedy w algorytmie lub
+	uszkodzenie danych czytanych z dysku doprowadzi do niesp¢jnoûci
+	sterty. Uszkodzenie takie moßna wykryç za pomocÜ funkcji
+	heaptest().
+	W pliku basic.hpp zdefiniowano makro HTEST bëdÜce obudowanym
+	wywoíaniem tej funkcji. Translator BAS2C moße umieszczaç
+	wywoíania HTEST na poczÜtku i na ko§cu kaßdej z funkcji
+	tíumaczonego programu (level 2) , tylko w funkcjach
+	z bibliotecznych plik¢w *.hpp (level 1) , albo w og¢le wyíÜczyç
+	generowanie kodu testujÜcego stertë (level 0).
+		Testowanie sterty wykonywane jest wtedy wyíÜcznie w
+	funkcji onerror()  .
+
+"Translate into C++ project" - Kod ¶r¢dí¢wy w jëzyku C++ jest zwykle
+	wiëkszy niß jego BASIC'owy odpowiednik. Dla wiëkszych program¢w
+	kompilator C++ moße nie radziç sobie z pojedymczym plikiem
+	wyprodukowanym przez BAS2C . Konieczny jest wtedy podziaí
+	programu na wiele mniejszych modul¢w z kt¢rych moßna utworzyç
+	na poziomie IDE Borland C++ tzw "project" .
+
+"Info in CPP program" - Program przetíumaczony na C++ moße, dla odr¢ßnienia
+	od swojego BASIC'owego pierwowzoru drukowaç na poczÜtku informacjë:
+
+	"Program translated  BAS2C ..."
+
+"Cursor off" - W programach w BASIC'u kursor widoczny jest jedynie podczas
+	wprowadzania danych z klawiatury. W jëzyku Borland C++ moßna zmieniaç
+	rozmiary kursora za pomocÜ wywoía§ funkcji _setcursor() .
+	Ustawienia tej opcji na "Yes" powoduje generowanie przez BAS2C
+	wywoía§ tej funkcji dla wygaszania kursora na poczÜtku
+	programu i wyûwietlania go tylko w instrukcjach czytajÜcych
+	klawiaturë.
+	Kursor jest przywracany jeûli program ko§czy sië normalnie albo za
+	pomocÜ wywoíania funkcji exit() lub onerror().
+
+"GOSUB stack size" - Spos¢b translacji instrukcji GOSUB wymaga zdefiniowania
+	tablicy liczb typu unsigned int o rozmiarze odpowiadajÜcym
+	najwiëkszemu zagíëbieniu podprogram¢w. Standartowo rozmiar ten
+	wymosi 1024 ( czyli 2KB ) co zazwyczaj jest wartoûciÜ o wiele za
+	dußÜ.
+
+"Test GOSUB stack" - Nadmierne zmniejszenie rozmiaru stosu instrukcji GOSUB
+	moße spowodowaç zniszczenie danych zajmujÜcych w pamiëci obszar za
+	stosem lub skok pod niewíaûciwy adres i nieprawidíowe dziaíanie
+	programu aß do  zawieszenia sië komputera wíÜcznie.
+		WíÜczenie tej opcji powoduje takÜ translacje programu, ße
+	program wykonywalny ko§czy sië bíëdem, jeûli iloûç zagíëbie§
+	przekroczy rozmiar stosu GOSUB. Odbywa sië to jednak kosztem czasu
+	wykonania.
+
+ Opcje kompilatora
+*******************
+Umieszczane sÜ w linii wywoíania kompilatora w tworzonym pliku wsadowym.
+Dziaíanie tych opcji nie ma wpíywu na ksztaít kodu C++ generowanego
+przez BAS2C .
+
+"Memory model" - Ze wzglëdu na organizacjë pamiëci w komputerach opartych
+	na procesorach rodziny Intel 80x86 moßliwe jest stosowanie dwu
+	rodzaj¢w wska¶nik¢w (adres¢w) do obiekt¢w w pamiëci:
+	kr¢tkich - 16 bitowych umoßliwiajÜcych adresowanie do 64KB
+	w standartowych segmentach programu.
+	díugich - 32 bitowych (16bitowy segment i 16 bitowe przemieszczenie)
+	umoßliwiajÜcych teoretycznie do zaadresowanie do 4GB pamiëci
+	w 65535 segmentach. Ale dla programu pracujÜcego pod kontrolÜ
+	DOS dostëpna przestrze§ adresowa ogranicza sië do 1MB, a praktycznie
+	dostëpna pamiëç do nie wiëcej niß ok 620KB.
+		W zaleßnoûci od rozmiaru wska¶nik¢w stosowanych do
+	adresowania danych i kodu programu w kompilatorach C++ dla
+	DOS stosuje sië cztery podstawowe i dwa dodatkowe modele pamiëci
+	programu:
+
+	small (s) - Adresy kodu i danych sÜ kr¢tkie . Oba segmenty nie
+		    mogÜ przekroczyç 64KB kaßdy.
+	medium (m) - Adresy kodu sÜ díugie, adresy danych sÜ kr¢tkie .
+		   Rozmiar kodu do 640KB . Rozmiar danych do 64KB.
+	compact (c) - Adresy kodu sÜ kr¢tkie, adresy danych sÜ díugie .
+		   Rozmiar kodu do 64KB . Rozmiar danych do 640KB.
+	large (d) - Adresy kodu sÜ díugie i adresy danych sÜ díugie .
+		   Rozmiar kodu i danych do 640KB, ale kompilator
+		   bcc sprawdza jedynie czy zmienne nie sÜ zadeklarowane
+		   z rozmiarem przekraczajÜcym 1MB.
+	W modelach z dlugimi wska¶nikami do danych rozmiar pojedynczej
+	tablicy nie moße przekroczyç 64KB. Ograniczenie to nie obowiÜzuje
+	w modelu:
+	huge (h) - Adresy kodu sÜ díugie, adresy danych sÜ díugie,
+		 normalizowane w taki spos¢b ße przemieszczenie mieûci
+		 sië zawsze w przedziale 0..15 . Model ten nie jest
+		 dostëpny dla program¢w majÜcych dziaíaç w trybie
+		 chronionym.
+	   Kompilator BCC umoßliwia utworzenia programu typu COM. W tym celu
+	wszystkie adresy w programie muszÜ odnosiç sië do jednego segmentu.
+	Program kompilowany jest w ten spos¢b w modelu:
+	tiny (t) - Wszystkie adresy sÜ kr¢tkie, kod i dane razem nie
+		   mogÜ przekroczyç 64KB.
+

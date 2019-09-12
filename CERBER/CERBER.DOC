@@ -1,0 +1,211 @@
+   PAKIET SYSTEMOWEGO ZABEZPIECZENIA PLIK£W "CERBER" wersja Beta
+
+	System operacyjny DOS powstaí dla komputer¢w osobistych -
+czyli takich na kt¢rych z zaíoßenia pracuje jeden ußytkownik.
+Dlatego nigdy nie zaimplementowano w nim znanej z Unix'a czy
+innych dußych system¢w metody przypisywania kaßdemu plikowi
+wíaûciciela. Jednak w sytuacjach gdy jeden komputer typu PC
+obsíuguje wiëcej ußytkownik¢w, w tym wielu niewprawnych, jak to
+ma miejsce np w szkoíach system wíasnoûci plik¢w staje sië bardzo
+potrzebny.
+	Pakiet program¢w CERBER wprowadza do systemu DOS podsystem
+wíasnoûci plik¢w. Kaßdy plik moße mieç swojego wíaûciciela, lub
+byç wíasnoûciÜ wsp¢lnÜ. Jedynie wíaûciciel pliku i administrator
+systemu mogÜ zmieniç jego atrybyty. Dziëki temu moßliwe jest
+zabezpieczenie wszystkich istotnych plik¢w system oraz innych plik¢w
+waßnych dla konkretnych ußytkownik¢w. Jest to szczeg¢lnie istotne w
+warunkach szkolnych gdzie niewprawni ußytkownicy czësto niszczÜ
+istotne programy lub pliki systemowe zmuszajÜc nauczyciela informatyki
+do ciÜgíego czuwania nad konfiguracjÜ kaßdej z maszyn.
+
+		ZASADA DZIAúANIA
+Informacja o wíasnoûci plik¢w zapisywana jest w katalogach systemu
+plik¢w DOS na nieußywananym bajcie w sÜsiedztwie bajtu atrybut¢w.
+	Przy wykonywaniu funkcji zmiany atrybut¢w wartoûç ta jest
+por¢wnywana z kodem aktualnie pracujÜcego ußytkownika i jeûli nie
+ma on uprawnie§ ( nie jest wíaûcicielem, ani administratorem a plik
+nie jest juß og¢lnie dostëpny ) to operacja zmiany atrybut¢w nie
+jest wykonywana.
+Samo zapisywanie wykonywane jest z ußyciem wska¶nika do aktualnego
+bufora systemowego z nieudokumentowanej struktury LL.
+NiezaprzeczalnÜ zaletÜ takiego podejûcia jest wydajnoûç implementacji
+funkcji podsystemu i kompatybilnoûç z programami typu Speed Disk
+przemieszczajacymi sektory na dysku.
+	Spos¢b ten ma teß swoje wady - przedewszystkim jest nieprzenoûny.
+Dziaía w systemie MSDOS 5.0 i 6.0, najprawdopodobniej bëdzie teß dziaíaí
+w nastëpnych wersjach tego systemu. Jednak w stosunku do system¢w innych
+firm np DR DOS moße byç niekompatybilny.
+	Dodatkowy problem pojawia sië w systemach rozszerzajÜcych DOS na
+prace wieloprocesowÜ np Windows 3.1 w trybie Enhanced, oraz nasynchronicznie
+wywoíywanych program¢w typu TSR. Wynika ona ze sposobu napisania czëûci
+rezydentnej pakietu CERBER:
+Rezydent ten przejmuje przerwanie 21H i w odmienny spos¢b obsíuguje funkcje
+zmiany atrybut¢w oraz wíasnÜ funkcjë o numerze FFH. W obsíudze tych
+funkcji rezydent dokonuje przeíaczenia stosu na wíasny, zapamientujÜc
+poíoßenie stosu ußytkownika na zmiennej we wíasnym segmencie danych.
+Jeûli teraz wykonanie kodu rezydenta zostanie przerwane, a procedura
+obsíugi przerwania wykona zn¢w funkcjë systemowÜ obsíugiwanÜ przez
+rezydenta to znienna ta zostanie zapisana nowÜ wartoûciÜ i prawidíowy
+powr¢t do pierwotnego programu ußytkownika nie bëdzie moßliwy.
+Fachowo nazywa sië to ße kod "nie jest wielowchodliwy" (not reentrant).
+Poniewaß jednak wíaûciwoûç ta dotyczy r¢wnieß kodu samego systemu DOS
+zastosowaíem podobne zabezpieczenie. Rezydent zwiëksza wartoûç znacznika
+systemowego InDos rozpoczynajÜc obsíugë wíasnych funkcji i zmniejsza jÜ
+przed zwr¢ceniem sterowania programowi ußytkownika.
+Zatem dla innego programu rezydentnego sprawdzajÜcego znacznik InDos
+rezydent podsystemu CERBER zachowuje sië jak element systemu MSDOS.
+	Pakiet CERBER jest teß niekompatybilny z sieciowymi systemami
+operacyjnymi w rodzaju Novell Netware i Unix/PC NFS w inny spos¢w
+implementujÜcymi funkcjë zmiany atrybut¢w, ale jego stosowanie i tak
+nie ma wtedy sensu , gdyß systemy te same posiadajÜ podsystem kontroli
+wíasnoûci plik¢w.
+
+		ELEMENTY PAKIETU
+
+W skíad pakietu wchodzÜ nastëpujÜce programy:
+
+	INSTALL.BAT
+	CERINST.EXE
+	CERBER.COM
+	LS.COM
+	CHOWN.COM
+	SU.COM
+	PASSWD.COM
+	GETUSER.COM
+	ADD_USER.BAT
+	LOGOUT.BAT
+
+
+oraz plik CERBER.DOC
+
+PROGRAMY PAKIETU Sè NIEWYMIENIALNE - WSZYSTKIE MUSZè POCHODZIï Z
+		JEDNEJ DYSKIETKI DYSTRYBUCYJNEJ !!!
+
+			REFERENCJE
+	INSTALL.BAT - pozwala na niekíopotliwÜ instalacjë
+systemu z dyskietki dystrybucyjnej. Instalacjë takÜ wolno wykonaç
+tylko raz. Jeûli czëûç rezydentna pakietu jest uruchomiona to nie
+dopuûci do powt¢rnej instalacji.
+	Przed uruchomieniem programu INSTALL.BAT nalezy uruchomiç
+program testujÜcy kompatybilnoûç - CERINST.EXE . W przeciwnym wypadku
+grozi zawieszenie systemu jeûli okaße sië on niekompatybilny.
+Program INSTALL powinien byç uruchamiany z linii komend DOS'u .
+Windows oraz nakíadki typu Norton Commander naleßy najpierw wyíÜczyç.
+Ußycie:
+	INSTALL katalog_docelowy [ katalog_¶r¢díowy ]
+
+Katalog docelowy musi byç tym, kt¢ry wystëpuje w zmiennej
+COMSPEC.
+
+	CERINST.EXE - program sprawdzajÜcy kompatybilnoûç
+systemu operacyjnego pod wzglëdem instalacji podsystemu CERBER.
+Naleßy go uruchomiç w takiej konfiguracji w jakiej bëdzie pracowaí
+pakiet.
+Po uruchomieniu program sprawdza najpierw dostëpnoûç struktury LL
+w danym systemie operacyjnym - nalezy zwr¢ciç uwagë czy dane pobrane
+z tej strukt¢ry i wyûwietlone na ekranie sÜ zgodne z informacjami
+o systemie dostëpnymi z innych ¶r¢deí - np z programu si Nortona.
+	W drugim kroku program testuje wszystkie katalogi na dyskach
+sprawdzajÜc dla kaßdego pliku bezpoûredni dostëp do sektora poprzez
+wska¶nik do aktualnego bufora.
+Jeûli ten test przejdzie pomyûlnie moßna zainstalowaç pakiet CERBER.
+Naleßy jednak sprawdziç jeszcze na obszernym katalogu testowym
+utworzonym specjalnie do tego celu czy nie zachodzÜ niekompatybilnoûci
+z innymi TSR'ami w systemie. Naleßy na plikach tego katalogu uruchamiaç
+polecenia attrib, chown i ls , oraz jednoczeûnie pr¢bowaç uaktywniaç
+TSR'y.
+
+	CERBER.COM - program rezydentny przejmujÜcy przerwanie 21H,oraz
+( tylko w wersji dystrybucyjnej ) 25H i 26H. Program wykonuje funkcjë
+systemu 43H (zmiana atrybut¢w) i wíasnÜ funkcjë FFH zwiÜzanÜ z ustawianiem
+aktualnego ußytkownika i wíaûcicieli plik¢w.
+Podczas instalacji program nie wyûwietla zadnych informacji - zwraca jedynie
+kod bíëdu 0 jeûli instalacja jest poprawna i 1 jeûli instalacja nie powiodía
+sië. Wersja Beta programu CERBER.COM wyûwietla w prawym g¢rnym naroßniku
+ekranu ciemny albo jasny prostokÜt w zaleßnoûci od stanu aktywnoûci.
+
+	LS.COM - program síußÜcy do wyûwietlania zawartoûci katalog¢w
+z informacjÜ o wíasnoûci plik¢w i atrybutami. Program nie zastëpuje
+polecenia DIR a jedynie je uzupeínia.
+Informacja wyûwietlana jest w nastëpujÜcymformacie:
+pozycja w katalogu,nazwa,atrybuty,wíaûciciel,czas modyfikacji,
+poíozenie pierwszej JAP na dysku, rozmiar .
+Identyfikatory wíaûcicieli pobierane sÜ z pliku haseí. W wypadku
+braku identyfikatora wyûwietlany jest numer ußytkownika.
+Atrybuty wyûwietlane sÜ w postaci "rhsldaXY" gdzie nieustawione
+atrybuty zastepowane sÜ znakiem "-".
+	Znaczenie:
+	r - tylko do odczytu (read only)
+	h - ukryty (hidden)
+	s - systemowy (system)
+	l - etykieta dysku (label)
+	d - katalog (directory)
+	a - archiwizowany (archiv)
+	X,Y - nie ußywane zwykle bity atrybut¢w.
+Ußycie:
+
+	LS [maska_plik¢w [maska_atrybut¢w] ]]
+
+	maska_plik¢w - ûcießka zako§czona nazwÜ ze znakami maskujÜcymi np *.*
+	maska_atrybut¢w - atrybuty plik¢w uwzglëdnianych przy przeszukiwaniu
+		   katalogu. Moße mieç postaç jak opisana powyßej"rhsldaXY"
+		   lub teß postaç liczbowÜ np 255 (wszystkie atrybuty).
+
+	CHOWN.COM - program síußÜcy do zmiany wíaûciciela bez zmiany
+atrybut¢w pliku. Pozwolenie na zmianë wíaûciciela ma administrator systemu
+oraz dotychczasowy wíaûciciel pliku.
+Ußycie:
+
+	CHOWN nowy_wíaûciciel maska_plik¢w [maska_atrybut¢w]
+
+	nowy_wíaûciciel - identyfikator lub numer nowego wíaûciciela
+	maska_plik¢w - ûcießka zako§czona nazwÜ ze znakami maskujÜcymi np *.*
+	maska_atrybut¢w - atrybuty plik¢w uwzglëdnianych przy przeszukiwaniu
+		   katalogu. Moße mieç postaç jak opisana powyßej"rhsldaXY"
+		   lub teß postaç liczbowÜ np 255 (wszystkie atrybuty).
+
+
+	 SU.COM - program síußÜcy do zmiany numeru aktualnego ußytkownika.
+Prosi o podanie hasía, jeûli hasío jest prawidíowe zmienia numer ußytkownika
+w TSR-rze CERBER.
+Ußycie:
+
+	SU identyfikator
+
+	identyfikator - nazwa lub numer nowego ußytkownika
+
+Jeûli jeszcze nie zdefiniowano hasía danego ußytkownika to naleßy wcisnÜç
+samo ENTER.
+
+
+	PASSWD.COM - zmiana hasía aktualnego ußytkownika.
+Konieczna jest znajomoûç starego hasía. W wypadku zapomnienia hasía
+administrator systemu moße zastÜpiç je w pliku passwd. znakiem gwiazdki
+PamiëtajÜc ßeby przed operacjÜ zdjÜç atrybuty z tego pliku, a potem
+je przywr¢ciç.
+
+	GETUSER.COM - program podajÜcy identyfikator i numer
+aktualnie pracujÜcego ußytkownika.
+
+	ADD_USER.BAT - program síußÜcy dodaniu nowego ußytkownika do
+listy. Moße byç wykonany jedynie przez administratora systemu.
+Ußycie:
+
+	ADD_USER nazwa_ußytkownika numer_ußytkownika
+
+Nazwa ußytkownika nie moße mieç wiëcej niß 8 znak¢w.
+Numer ußytkownika musi mieûciç sië w zakresie od
+2 do 254.
+Wartoûç 0 oznacza plik bez wíaûciciela, albo osobë bezimiennÜ
+pracujÜcÜ na komputerze. Na wydrukach programu LS jest to oznaczane
+jako NOBODY .
+Wartoûç 1 oznacza plik operatora systemu, albo osobë peíniÜcÜ te rolë
+pracujÜcÜ na komputerze. Na wydrukach programu LS jest to oznaczane
+jako OPERATOR.
+Wartoûç 255 jest zarezerwowana, aczkolwiek nie ma na razie specjalnego
+znaczenia.
+
+	LOGOUT.BAT - program ustawiajÜcy ußytkownika "nobody"
+jako aktualnego ußytkownika.
+
+		B

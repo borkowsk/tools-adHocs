@@ -1,0 +1,594 @@
+BIBLIOTEKA FUNKCJI KOMPATYBILNYCH Z JêZYKIEM BASIC
+--------------------------------------------------------
+
+Wszystkie operacje moßliwe do zaprogramowania w jezyku BASIC moßna teß
+zapisaç zgodnie ze skíadniÜ jëzyka C.  Jednak tak wygenerowany kod byíby
+praktycznie nieczytelny bowiem znaczna czëûç operacji zapisanych w BASIC'u
+w jednej linii, w kodzie jëzyka C zajmowaíaby lini kilka, lub kilkanaûcie
+i zar¢wno kod ¶r¢díowy C jak i wynikowy (EXE) byíby znacznie wiëkszy w
+por¢wnaniu z analogicznymi plikami w BASIC'u.
+
+Dlatego konieczne okazaío sie ußycie w translacji pewnych mechanizm¢w
+jëzyka C++ i zaprogramowanie zestawu funkcji naûladujÜcych procedury z
+biblioteki czasu pracy jezyka BASIC. Funkcje te zostaíy napisane w oparciu
+o dokumentacje implementacji jëzyka Microsoft BASIC version 7.0 . Z
+funkcji tych utworzono biblioteki moduí¢w o nazwach BASLIB?.LIB ( zamiast
+'?' jest litera S,C,M,L,H oznaczajÜca model pamiëci - patrz "Tworzenie
+projektu i kompilacja"). Czëûç funkcji doíÜczana jest bezpoûrednio w
+postaci kodu ¶r¢díowego razem z deklaracjami funkcji z biblioteki w
+postaci plik¢w *.HPP -> ARRAY.HPP
+			BASIC.HPP
+			BASSTRIN.HPP
+			DATA.HPP
+			GOSUB.HPP
+			MATRIX.HPP
+			ONERROR.HPP
+
+Uczyniono tak dlatego ße ze wzglëdu na efektywnoûç
+kompilacji i wykonania przetíumaczonego programu czëûç funkcji zostaía
+zdefiniowana jako funkcje "inline" ( rozwijane podczas kompilacji a
+nie wywoíywane ) , czëûç zaû jako "static" ( lokalne - widoczne tylko w
+jednym pliku).
+
+Poniewaß jëzyk Microsoft BASIC 7.0 zawiera bardzo szeroki zestaw
+r¢ßnorodnych podprogram¢w, z kt¢rych wiele jest charakterystycznych
+wyíacznie dla tej implementacji, inne zaû rzadko wykoßystywane zdecydowano
+sië na pewien podstawowy podzbior procedur. W szczeg¢lnoûci nie zostaía
+zaimplementowana grafika, bazy danych ISAM , procedura PLAY oraz procedury
+dostarczane w BASICU 7.0 w dodatkowych moduíach np WINDOW.
+
+OPIS FUNKCJI BIBLIOTEKI BASLIB W KOLEJNOòCI PLIK£W *.HPP
+
+ ARRAY.HPP:
+************
+Plik zawiera definicje klasy ..._array pozwalajÜcej na definiowanie
+jednowymiarowych tablic dowolnego typu 	o dynamicznie okreslanym
+rozmiarze.. Plik jest doíÜczany tyle razy ile typ¢w tablicowych jest
+w programie. Typ wygenerowanej tablicy ustalany jest w makrodefinicji
+ _TYPE_ . Spos¢b indeksowania zmieniany jest makro _INDEX_MODE_ .
+Wartoûç inicjalizacji ustala makro _INITIALIZE_ .
+
+Funkcje publiczne klasy:
+------------------------
+
+Konstruktory i destruktory - wywoíywane niejawnie:
+	_g_array_()
+	_g_array_(_type_* pp,size_t siz)
+       ~_g_array_()
+
+Funkcje zwracajÜce g¢rne i dolne ograniczenie indeksu tablicy
+(parametr N nie ma znaczenia - wymiar zawsze jest 1 )
+	size_t	lbound();
+	size_t	lbound(int N)
+	size_t  ubound()
+	size_t  ubound(int N)
+np> if(A.ubound()<5) ... ;
+    if(A.lbound()==1) ... ;
+    if(A.ubound(1)<5) ... ;
+    if(A.lbound(1)==1) ... ;
+    for(i=lbound(1);i<=ubound(1);i++)
+
+Funkcja alokujÜca tablicë s-elementowÜ na stercie:
+	void	dim(size_t s);
+np> A.dim(5); //Alokacja 5-cio elementowej tablicy A
+
+Funkcja zwalniajÜca tablicë :
+	void	erase()
+Po wykonaniu tej funkcji zabronione jest odwoíywanie sië do
+element¢w tablicy aß do nastëpnego wywoíania funkcji dim.
+np> A.erase(); //Zwolnienie tablicy A
+
+Funkcja zwalniajÜca tablicë i alokujÜca nowÜ s-elementowÜ na stercie:
+	void    redim(size_t s)
+np> A.redim(10); //Realokacja tablicy A do 10 element¢w
+
+Implementacja operator¢w indeksowania:
+bez kontroli zakresu -    _type_&  operator []  (size_t i);
+z kontrolÜ zakresu   -    _type_&  operator ()  (size_t i);
+np> S=A[4];// bez kontroli
+    A[5]=S;
+    S=A(3);// z kontrolÜ
+    A(2)=S;
+
+Operator konwersji do wska¶nika :
+operator _type_* ()
+np> memcpy(target,(int*)A,A.ubound()-A.lbound); //skopiowanie zawartoûci tablicy
+
+ MATRIX.HPP
+************
+Plik zawiera definicje klasy ..._array pozwalajÜcej na definiowanie
+dwuwymiarowych tablic dowolnego typu o dynamicznie okreslanych
+wymiarach. Plik jest doíÜczany tyle razy ile typ¢w tablicowych jest
+w programie. Typ wygenerowanej tablicy ustalany jest w makrodefinicji
+ _TYPE_ . Spos¢b indeksowania zmieniany jest makrodefinicjÜ _INDEX_MODE_ .
+Wartoûç inicjalizacji ustala makro _INITIALIZE_ .
+
+Funkcje publiczne klasy:
+------------------------
+
+Konstruktory i destruktory - wywoíywane niejawnie:
+	 _g_array_()
+	 _g_array_(void* pp,size_t siz,size_t n);
+	~_g_array_()
+
+Funkcje zwracajÜce g¢rne i dolne ograniczenie indeksu tablicy
+(parametr d w funkcji ubound musi byç 1 lub 2, w funkcji
+ lbound jest ignorowany )
+	size_t   lbound(int )
+	size_t   ubound(int d)
+np>if(B.lbound(1)>1) ...
+   if(B.lbound(2)<5) ...
+   for(i=B.lbound(1);i<=B.ubound(1);i++)
+	for(j=B.ubound(2);j>=B.lbound(2);i--)
+			...
+
+Funkcja alokujÜca tablicë s wierszy po z element¢w na stercie:
+	void	 dim(size_t s,size_t z);
+np>B.dim(5,10); // tablica 5 wierszy po 10 elementow
+
+Funkcja zwalniajÜca tablicë :
+	void	erase()
+Po wykonaniu tej funkcji zabronione jest odwoíywanie sië do
+element¢w tablicy aß do nastëpnego wywoíania funkcji dim.
+np> B.erase(); //Zwolnienie tablicy A
+
+Funkcja zwalniajÜca tablicë i alokujÜca nowÜ s-elementowÜ na stercie:
+	void     redim(size_t s,size_t z)
+np> B.redim(10,10); //Realokacja tablicy B do 10 wierszy po 10 element¢w
+
+Implementacja operator¢w indeksowania:
+bez kontroli zakresu - _type_*  operator []  (size_t i)
+z kontrolÜ zakresu  -  _type_&  operator ()  (size_t i,size_t j);
+Operator () jest wielokrotnie wolniejszy od operatora [] i nie naleßy
+ußywaç go w gotowych programach. Zostaí zdefiniowany w celu usprawnienia
+wykrywania bíëd¢w.
+np> B[1][2]=0;
+    L=B[4][6];
+    C=B(5,5);
+    B(6,6)=C;
+
+Operator konwersji do wska¶nika :
+	operator _type_** ()
+np> int** =(int**) B;
+
+ BASIC.HPP
+***********
+Plik zawiera deklaracje i definicje kt¢re mogÜ vyç ußywane w innych plikach
+*.hpp i wszystkich plikach *.cpp tíumaczonego programu. Musi byç wiëc
+wíÜczony do kaßdego pliku *.cpp przed innymi plikami *.hpp.
+
+Plik zawiera:
+Deklaracje funkcji wywoíywanej w sytuacjach bíëdnych.
+Znaczenie kod¢w wywoíania podano na ko§cu rozdziaíu.
+
+	void onerror(int code);
+
+Makrodefinicje HTEST sprawdzajÜcÜ stertë zmiennych alokowanych dynamicznie i
+w wypadku stwierdzenia bíëdu wywoíujÜcÜ funkcjë onerror.
+W wypadku gdy nie jest zdefiniowana makrodefinicja _HEAP_TESTING_ , HTEST
+jest zdefiniowana jako pusta - nie powoduje wiëc wygenerowania jakiegokolwiek
+kodu w programie EXE.
+Inne funkcje i procedury nie majÜce bezpoûrednich odpowiednik¢w w jëzyku C++,
+i nie dajÜcych sië dowiÜzaç znaczeniowo do innych plik¢w *.hpp:
+
+Funkcja zwracajÜca czas systemowy w postaci wartoûç w sekundach
+	float	 timer();
+np> float start_time=timer();
+    ....
+    printf("Czas wykonania %g sec.\n",timer()-start_time);
+
+Funkcja zwracajÜca kod znaku z pozycji ekranu okreûlonej przez parametry
+line i column:
+int 	 screen(int& line, int column);
+np>  zmienna_caíkowita = screen(1,1);//Lewy g¢rny r¢g
+     zmienna_caíkowita2= screen(25,80);//Prawy dolny r¢g
+
+Makrodefinicje pozwalajÜce na surowy dostëp do pamiëci w stylu
+jëzyka BASIC:
+	DEF_SEG( SEG ) - Ustala segment dostëpny az do nastëpnego
+"wywoíania" makra.
+Makro DefaultSeg uzyte jako parametr makra DEF_SEG powoduje przywr¢cenie
+wartoûci domyûlnej - segmentu danych statycznych programu (_DGROUP).
+	POKE( OFS , VAL ) - pozwala zapisaç wartoûç caíkowitÜ VAL
+pod adres okreûlony przez ustalony segment i podany parametr OFS (offset).
+	PEEK(_OFS_)     - pozwala na bazpoûrednie odczytanie 16 bitowego
+síowa z pod adresu pamieci okreûlonego przez ustalony segment i podany
+parametr OFS (offset).
+
+np>  DEF_SEG(0xB800);// Segment pamiëci ekranu karty EGA i VGA w trybie znakowym
+     POKE(0x10,0x0F01);//Biala twarz na czarnym tle w 10 znaku
+     clrscr();
+     c=PEEK(0x10);// c typu znakowego zawiera kod 32 jeûli czyszczenie ekranu
+		  // zostaío dokonane
+     DEF_SEG(DefaultSeg);//
+
+Funkcje matematyczne nie majÜce bezpoûrednich odpowiednik¢w w C++ :
+	long int cint(double _P_);
+	inline int sgn(double i);
+	inline int sgn(long int i);
+	inline long int ent(double _P_);
+	inline long int fix(double _P_); //Its standard C conversion.
+np>
+#include <stdio.h>
+#include <stdlib.h>
+#include "basic.hpp"
+#include "onerror.hpp"
+#include "gosub.hpp"
+
+
+
+double data[]={0.0,
+		0.3, 0.499999,0.5,0.7, 0.999999,
+	       99.3,99.5,99.7,
+	       -0.3,-0.499999,-0.5,-0.7,-0.999999,
+	       -99.3,-99.5,-99.7};
+
+main()
+{
+double N,fraction=0,integer=0,scratch;
+int i;
+printf
+("\n\n\n\n     N        Int(N)    Cint(N)    Fix(N)  \n");
+for(i=0;i<(sizeof(data)/sizeof(double));i++)
+	{
+	N=data[i];
+//	fraction = modf(N, &integer);
+	printf("%10g %10ld %10ld  %10ld %d \n",N,int(N),cint(N),fix(N),sgn(N));
+//	printf("%g are %g and %g\n",N, integer, fraction);
+	}
+return 0;
+
+
+}
+
+Funkcje oprerujÜce na plikach rekord¢w o dostëpie swobodnym (RANDOM):
+Funkcje te ußywajÜ typu FILE* ( wska¶nik do strukt¢ry typu FILE ) w spos¢b
+niestandartowy. W rzeczywistoûci wartoûç zwr¢cona przez funkcje ropen jest
+adresem strukt¢ry typu RFILE. W zwiÜzku ztym niemoßliwe jest zamienne
+ußycie wska¶nik¢w do plik¢w utworzonych przez funkcje fopen i ropen.
+
+Funkcja otwarcia pliku jako random o nazwie okreûlonej parametrem "name" i
+dlugoûci rekordu ustalonej parametrem "reclen". Jeûli plik taki jeszcze
+nie istnieje na dysku to zostanie utworzony.
+	FILE*	ropen(const char* name,size_t reclen);
+np> if((file1=ropen("test.rnd",12))==NULL) exit(1);
+
+Funkcja zwracajÜca aktualnÜ pozycjë w pliku - czyli nr rekordu
+kt¢ry zostanie zapisany lub odczytany w nastepnej operacji put lub get.
+	fpos_t	rlocation(FILE* f);
+np> l=rlocation(file1);
+
+Funkcja zwracajÜca aktualny rozmiar pliku. Wartoûç jest podawana jako
+liczba rekord¢w.
+	long	rsize(FILE* f);
+np> printf("Plik ma %l rekord¢w. \n",rsize(file1));
+
+Funkcja zwracajÜca wartoûç 0 jeûli aktualne pozycja w pliku nie jest
+za ostatnim rekordem czyli jest moßliwe pobranie rekordu.
+	int     reof(FILE* f);
+np> if(!reof(file1)) get(file1);
+
+Funkcja ustalajÜca aktualnÜ pozycjë w pliku i zwracajÜca jÜ jeûli opetracja
+sië powiodía:
+	long	rseek(FILE* f,long pos);
+np> rseek(file1,1);//Na poczÜtek pliku
+
+Funkcja zamkniëcia pliku random. Powinna zwr¢ciç 0 . Inna wartoûç moßliwa jest
+tylko w wypadku blëdu IOErr obsíußonego przez funkcje onnerror ußytkownika.
+	int	rclose(FILE* f);
+np> rclose(file1);// Plik zamkniëty - dalsze zapisy niwmoßliwe
+
+Funkcja dowiÜzania zmiennych typu bstring do bufora pliku random.
+Umoßliwia pobranie zawartoûci p¢l rekordu uprzednio wczytanego jednÜ z
+funkcji get operujÜcych na buforze.
+Parametr n okreûla liczbë zmiennych kt¢re bëdÜ dowiÜzane, nastëpnie naleßy
+podaç n par - zmienna bsring'owa i liczba caíkowita okreûlajÜca liczbë
+bajt¢w rekordu kt¢ra ma byç zkojarzona z tÜ zmiennÜ.
+	void    rfield(FILE* f,size_t n,...);
+Funkcje wczytujÜce rekord z pliku:
+z aktualnej pozycji -
+		void    rget(FILE* f);
+z pozycji podanej parametrem "pos" -
+		void    rget(FILE* f,long pos);
+np> rfield(file1,3,A,2,B,6,C,2);
+    get(file1);
+    zm1=CVI(A);zm2=B; zm3=CVI(C);
+    ...
+    get(file1,5);//wczytanie rekordu nr 5
+
+Funkcje zapisujÜce zawartoûç bufora pliku random na dysk jako rekord
+na pozycji aktualnej:
+	void    rput(FILE* f);
+i na pozycji podanej parametrem "pos" -
+	void    rput(FILE* f,long pos);
+np>   rfield(file1,3,A,2,B,6,C,2);
+      A.lset(MKI(124));
+      B.lset((bstring)"ABCDEF");
+      C.lset(MKI(5));
+      rput(file1); // wpisanie w pozycji aktualnej
+      rput(file1,12);// wpisanie w pozycji 12
+
+Funkcje umoßliwiajÜce zapis i odczyt z pominiëciem bufora pliku
+random bezpoûrednio do/z struktury.
+void    rget(FILE* f,void* STRUCTURE,size_t STSIZE);
+void    rput(FILE* f,void* STRUCTURE,size_t STSIZE);
+
+Jednosíowowe nazwy typ¢w zmiennych przydatne przy rëcznym usprawnianiu
+tlumaczonego programu. Nazwy takie konieczne sÜ do definiowania tablic
+dynamicznych
+	typedef long   double  extended;
+	typedef unsigned long  ulong;
+	typedef unsigned int   uint;
+	typedef unsigned short ushort;
+	typedef unsigned char  uchar;
+	typedef unsigned long  doubleword;
+	typedef unsigned int   word;
+	typedef unsigned char  byte;
+
+
+ BASSTRIN.HPP
+**************
+Plik zawiera dekalaracje typu bstring, jego metod operatorowych i wszystkich
+funkcji zaprzyja¶nionych - majÜcych bstring'i jako parametry lub wartoûci
+zwracane. Funkcje te zostaíy napisane tak by jak najdokíadniej naûladowaíy
+funkcje opisane w dokumentacji Microsoft Basic 7.0 . Plik ten zawiera
+deklaracje wiekszoûci funkcji biblioteki BASLIB:
+Konstruktory i destruktor typu bstring nigdy nie wywoíywane jawnie:
+	 bstring();
+	 bstring(bstring&);
+	 bstring(const char*);
+       ~ bstring()
+
+Metody i operatory typu bstring:
+	 void erase(); -> Zerowanie ía§cucha - od tego momentu jest on pusty
+np> A.erase();
+
+	 operator char*() -> Konwersja do typu char*
+	 operator char()  -> konwersja do pojedynczego znaku - zwraca 1 znak
+
+	int	 operator == (bstring& wz) -> por¢wnanie bstring¢w
+	int	 operator == (char* wz)	   -> por¢wnanie bstringu z char[]
+ friend int      operator == (char* ch,bstring& wz)
+	int	 operator != (bstring& wz) -> operatory nier¢wnoûci
+	int	 operator != (char* wz)
+
+	bstring& operator =  (bstring&);   -> operatory przypisania
+	bstring& operator =  (const char*);
+	bstring& operator += (bstring&);   -> operatory przedíußania
+	bstring& operator += (const char*);
+	bstring  operator +  (bstring&);   -> operatory sumowania
+	bstring  operator +  (const char*);
+ friend bstring  operator +  (const char*wztext,bstring& wz);
+
+
+Jeûli zdefiniowane jest makro _ENABLE_CHAR_OPERATORS_ to dostëpne sÜ
+jeszcze nastëpujÜce operatory:
+
+	int	 operator == (const char mt) ->operatory porowna§ ze znakiem
+friend  int	 operator == (const char mt,bstring& wz)
+	int	 operator != (const char mt)
+friend  int	 operator != (const char mt,bstring& wz)
+	bstring& operator =  (const char);
+	bstring& operator += (const char);
+	bstring  operator +  (const char);
+friend  bstring  operator +  (const char z,bstring& wz);
+
+Metoda wstawiajÜca bstring "expresion" do zmiennej typu bstring od
+pozycji "start" na miejsce "lenght" znak¢w.
+	void	 mid(bstring& expresion, size_t start,size_t lenght=0xffff);
+np> A.mid("ûrodek",15,6);// Wstawia 6znak¢w od pozycji 15-stej
+    B.mid(A,12);//Wstawia string A do stringu B od pozycji 12-stej
+
+Metody wstawiajÜce wyraßenie stringowe do ía§cucha o uprzednio ustalonej,
+díugoûci. Jeûli wyraßenie jest díußsze od stringu docelowego to zostanie
+obciëte.
+	void     lset(bstring& expresion);
+	void     rset(bstring& expresion);
+np> A=spaces(12);
+    A.lset("LSET");//zawartoûç A - "LSET        "
+    B=string("*",12);
+    B.rset("RSET");//zawartoûç B - "        RSET"
+
+Funkcje zaprzyja¶nione z typem bstring czyli majÜce parametry lub zwracajÜce
+wartoûç tego typu i zadeklarowane z modyfikatorem "friend":
+	size_t   len(bstring& ln) ->zwraca díugoûç ía§cucha.
+	size_t   instr(bstring& s1,bstring& s2,size_t start=1);->zwraca
+pozycje s1 w s2 lub 0 jeûli nie znajdzie.
+	bstring  left(bstring&,size_t  l); -> zwraca "l" znak¢w od lewej
+strony ía§cucha.
+	bstring  right(bstring&,size_t l); -> zwraca "l" znak¢w od prawej
+strony ía§cucha.
+	bstring	 mid(bstring&  wz,size_t start,size_t length=0xffff); ->
+zwraca "lenght" znak¢w wyciëtych z ía§cucha od pozycji start.
+	bstring  ltrim(bstring&);-> zwraca kopie ía§cucha pozbawionÜ
+wiodÜcych spacji.
+	bstring  rtrim(bstring&);-> zwraca kopie ía§cucha pozbawionÜ
+ko§cowych spacji.
+	bstring  lcase(bstring&);-> -> zwraca kopie ía§cucha z literami
+od 'A' do 'Z' zamienionymi na litery od 'a' do 'z';
+	bstring  ucase(bstring&);-> zwraca kopie ía§cucha z literami
+od 'a' do 'z' zamienionymi na litery od 'A' do 'Z';
+	bstring  str(double);-> zwraca ía§cuch z reprezentacjÜ podanej jako
+parametr liczby typu double w formacie 0.000 lub 0.000E00 .
+	bstring  hex(long int);-> zwraca ía§cuch z reprezentacjÜ podanej jako
+parametr liczby typu int w formacie szesnastkowym.
+	bstring  oct(long int);->zwraca ía§cuch z reprezentacjÜ podanej jako
+parametr liczby typu int w formacie ¢semkowym.
+	double 	 val(bstring&);-> przeksztaíca ía§cuch na liczbë typu double
+jeûli jest to moßliwe. Jeûli ía§cuch nie reprezentuje prawidíowej liczby
+funkcja zwraca 0.
+	bstring  space(size_t len);->zwraca ía§cuch zawierajÜcy "len" spacji.
+	bstring  string(size_t len,char c);->zwraca ía§cuch zawierajÜcy
+"len" znak¢w okreûlonych parametrem "c".
+	bstring  inkey();->zwraca ía§cuch zawierajÜcy znak wczytany z bufora
+klawiatury. Jeûli bufor jest pusty zwraca pusty ía§cuch. Jeûli naciûniëty
+zostaí kt¢ryû z klawiszy dodatkowych to zwr¢cony ía§cuch zawiera znak '\0'
+i "scan-code" klawisza.
+	bstring  input(size_t n);->zwraca n znak¢w wczytanych z stdin
+	bstring  input(size_t n,FILE* s);->zwraca  n znak¢w wczytanych z s
+	void 	 input(bstring& b)-> wczytuje na ía§cuch z stdin.
+Terminatorami sÜ znaki "," ";" i "EOL".
+	void 	 input(FILE*,bstring&);->wczytuje na ía§cuch z pliku.
+Terminatorami sÜ znaki "," ";" i "EOL".
+	void 	 line_input(FILE*,bstring&);->wczytuje na ía§cuch caíÜ linie
+z pliku.
+void 	 line_input(bstring& b)->wczytuje na ía§cuch caíÜ linie
+z stdin.
+
+	Alternatywna wersja funkcji we/wy :
+	bstring  finps(FILE* f);
+	bstring  flinps(FILE* f);
+	bstring  inps();
+	bstring  linps();
+
+	int	 asc(bstring& b) -> zwraca kod pierwszego znaku w ía§cuchu.
+	bstring  chr(int c); ->zwraca ía§cuch o díugoûci 1 zawierajÜcy  znak
+o kodzie ASCII okreûlonym przez "c".
+	bstring  command_line(); -> zwraca linie parametr¢w wywoíania
+programu pozbawionÜ wiodÜcych spacji i z literami 'a' do 'z' zamienionymi na
+litery od 'A' do 'Z'.
+	Funkcje konwersji ußyte w makrodefinicjach MKn
+	bstring	 _mk(int i);
+	bstring	 _mk(long int i);
+	bstring	 _mk(float i);
+	bstring	 _mk(double i);
+
+	bstring curdir(int d);-> funkcja zwracajÜca bießÜcÜ ûcießke dyskowÜ
+	void     files(bstring& mask);-> funkcja powoduje wydrukowania na
+ekranie zawartoûci bießÜcego katalogu zgodnie z "mask" w formacie komendy
+systemu DOS - dir "mask" /w.
+	bstring  date_s();-> funkcja zwraca string zawierajÜcy reprezentacjë
+aktualnej daty systemowej.
+	bstring  time_s();-> funkcja zwraca string zawierajÜcy reprezentacjë
+aktualnego czasu systemowego.
+	bstring using(bstring& s);->funkcja przeksztaíca bstring zawierajÜcy
+znaki formatujÜce instrukcji "PRINT USING" w odpowiadajÜcy format dla
+instrukcji printf jëzyka C.
+	Makrodefinicje umoßliwiajÜce przeksztaícenie liczb na ía§cuchy
+	w celu zapisania do pliku random.
+	MKI(/*integer*/ i)
+	MKL(/*longint*/ i)
+	MKS(/*float  */ i)
+	MKD(/*double */ i)
+	Makrodefinicje umoßliwiajÜce przeksztaícenie ía§cuch¢w na liczby:
+	po odczytaniu rekordu z pliku random.
+	CVI(/*bstring*/ b)
+	CVL(/*bstring*/ b)
+	CVS(/*bstring*/ b)
+	CVD(/*bstring*/ b)
+
+
+
+ DATA.HPP
+**********
+Plik zawiera funkcje inline umoßliwiajÜce odczyt danych z globalnej tablicy
+_data_table do zmiennych oraz odpowiednie makrodefinicje.
+Jëzyk C++ zawiera bagaty mechanizm inicjowania zmiennych. Niestety mechanizm
+jëzyka BASIC - "data,read,restore" pozwalajÜcy mieszaç ze sobÜ wartoûci
+ r¢ßnych typ¢w nie ma prostego przeniesienia na jëzyk C++.
+Stad zdecydowano sië wszystkie wartoûci, kt¢re w programie BASIC'owym
+znajdujÜ sië w liniach DATA traktowaç jako teksty i dopiero w trakcie
+dziaíania programu zmieniaç na wartoûci numeryczne jeûli jest to
+konieczne.
+W pliku zadeklarowane sÜ dwie zmienne:
+extern char  _data_table[];
+extern char* _data_pointer;
+kt¢re muszÜ zostaç zdefiniowane w jednym z moduí¢w programu.
+Oraz zdefiniowano dwa makra:
+	READDATA( zmienna ) -> wczytanie kolejnego pola tablicy _data_table
+na zmiennÜ i przesuniëcie wska¶nika _data_pointer na nastëpne pole.
+	RESTORE -> przestawienie wska¶nika pozycji na pierwsze pole tablicy
+_data_table.
+Zdefiniowano teß przeciÜßone funkcje inline dla kaßdego typu BASIC'owego
+ußywane przez makro READDATA
+	inline void read_data_table(double& d)
+	inline void read_data_table(float& d)
+	inline void read_data_table(long int& d)
+	inline void read_data_table(int& d)
+	inline void read_data_table(bstring& b)
+Funkcje te nie powinny byç bezpoûrednio ußywane poniewaß implementacja
+makrodefinicji READDATA i RESTORE moße ulec zmianie w nastëpnych wersjach.
+Plik DATA.HPP musi byç wíÜczany za plikiem BASSTRING.HPP. W przeciwnym
+wypadku nie funkcja  read_data_table(bstring&) nie zostanie zdefiniowana.
+
+ GOSUB.HPP
+***********
+Plik zawiera makrodefinicje umoßliwiajÜce posíugiwanie sië w jëzyku C
+BASIC'owymi instrukcjami "gosub etykieta" i "ret". Jest to niewygodny
+i przestarzaíy spos¢b strukturalizacji algorytmu, ale czësto uzywany
+przez programist¢w BASIC'owych, szczeg¢lnie w starszych programach.
+BAS2C zapewnia implementacjë pozwalajÜcÜ stosowaç instrukcje analogiczne
+do gosub w funkcji main() programu w jëzyku C.
+	Najprostrzym sposobem byíoby wstawienie w miejsce instrukcji
+gosub bezpoûredniego kodu assamblerowego : asm call etykieta;
+Niestety wewnëtrzny assambler kompilatora BCC v 2.0 nie pozwala na takie
+zastosowanie etykiety. Dodatkowo adresy powrotu pozostawione na stosie
+zaburzajÜ dziaíanie funkcji bibliotecznych. Dlatego okazaío sië konieczne
+zdefiniowanie specjalnej tablicy, kt¢ra peíni rolë stosu dla instrukcji
+GOSUB oraz specjalnych funkcji pozwalajÜcych na pozostawienie na stosie
+adresu powrotu oraz zdjëcie adresu ze stosu i powr¢t pod ten adres.
+Funkcje te sÜ zdefiniowane jako "static near" i nie powinny byç wywoíywane
+inaczej jak z wnëtsza makrodefinicji GOSUB i RET_SUB.
+	W pliku zdefiniowano dwa makra:
+		GOSUB(_LABEL_ ) pozwalajÜcy na skok do etykiety z pozostawieniem
+na stosie adresu powrotu.
+		RET_SUB pozwalajÜcy na powr¢t z podprogramu.
+Makrodefinicje korzystajÜ z funkcji
+	static void near _save_ip();
+	static void near _restore_ip()
+oraz tablicy _gosub_stack i wska¶nika _gosub_sp.
+Funkcje te nie powinny byç bezpoûrednio ußywane poniewaß implementacja
+makrodefinicji GOSUB i RET_SUB moße ulec zmianie w nastëpnych wersjach.
+
+ ONERROR.HPP
+*************
+Plik zawiera standartowÜ funkcjë obsíugi bíëd¢w wykonania programu
+i jest doíÜczany tylko do jednego z plik¢w ßr¢díowych.
+Programista moße napisaç wíasnÜ funkcjë o nazwie onnerror i usunÜç
+linie #include "onerror.hpp" . Nigdy nie powinnien nastëpowaç powr¢t
+z funkcji onneror poniewaß moße to prowadziç do zawieszenia komputera.
+Funkja powinna ko§czyç sië wywoíaniem abort lub exit.
+Ponißej zamieszczono kod standardowej funkcji onerror.
+
+void onerror(int code)
+{
+fprintf(stderr,"Run time error %d\n",code);// Drukowanie numeru bíedu
+if(errno!=0)			// Jeûli nastÜpií bíÜd systemu operacyjnego
+	perror("OS error");	// to wypisywanie odpowieniego kumunikatu
+if(code!=HpDisr)                // Jeûli kodem bíedu nie jest uszkodzenie sterty
+	if(heapcheck()<0)       // to sprawdzenie sterty na wszelki wypadek.
+		{fprintf(stderr," Heap checking failed !");}
+exit(code);			// Wyjûcie do systemu ze zwr¢ceniem kodu bíëdu
+}
+
+
+	Kody bíëd¢w generowane przez programy tíumaczone przez BAS2C
+       --------------------------------------------------------------
+OutMem=1: Brak pamiëci do alokacji zmiennej dynamicznej.
+*	  Moze nastÜpiç w funcjach zwiÜzanych z klasÜ bstring,
+	  w funkcjach ropen i rfield oraz w metodach typ¢w
+	  tablicowych dim i redim.
+HpDisr=2: Wykryto uszkodzenie sterty. Moße wystÜpic przy jawnym lub
+	  ukrytym wywoíaniu makra HTEST. Zazwyczaj spowodowane jest
+	  wczeûniejszym  ußyciem w programie nie zainicjowanego lub
+	  zwolnionego wska¶nika albo przekroczeniem zakresu tablicy.
+RetOvr=3: OsiÜgniëto dno stosu GOSUB. Wystëpuje jeûli nastÜpi wiëcej
+	  wywoía§ makra RET_SUB niß GOSUB.
+GosOvr=4: OsiÜgnieto szczyt stosu GOSUB. Wystëpuje przy zbyt gíëbokim
+	  zagíëbieniu wywoía§ podprogram¢w. Sprawdzenie jest wykonywane
+	  jedynie wtedy gdy zdefiniowane jest makro _TEST_GOSUB_STACK_.
+InvPar=5: Parametr wywoíania funkcji jest bíedny.
+RangE=6:  Przekroczenie zakresu tablicy. Sygnalizowane przez operatory
+	  typ¢w tablicowych indeksowania z kontrolÜ zakres¢w.
+InvCall=7:Wadliwe wywoíanie funkcji. Z jakiû przyczyn wywoíanie funkcji
+	  nie ma sensu z tymi parametrami lub w tym miejscu programu.
+NullUse=8:Wykryto przypisanie na wskaßnik pusty.
+
+ Bíedy o kodach powyßej 100 sÜ sygnalizowane   przez funkcje obsíugi
+plik¢w random.
+IOErr=105   :Wykryto bíÜd Wejûcia/Wyjûcia inny niß bíÜd odczytu lub zapisu.
+WriteErr=106:Wykryto bíÜd zapisu do pliku.
+ReadErr=107 :Wykryto bíÜd odczytu z pliku.
+
+
+

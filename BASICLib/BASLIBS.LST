@@ -1,0 +1,84 @@
+Publics by module
+
+BASCINT 	size = 198
+	cint(double)                    
+
+BASDATE 	size = 205
+	date_s()                          time_s()
+
+BASDIR  	size = 133
+	curdir(int)                     
+
+BASDOS  	size = 200
+	command_line()                    files(bstring near&)
+
+BASDSEG 	size = 17
+	_init_def_seg()                   __def_seg_
+
+BASRFIL1	size = 1193
+	rclose(FILE near*)                rfield(FILE near*,unsigned int,...)
+	rget(FILE near*)                  rget(FILE near*,long)
+	rlocation(FILE near*)             ropen(const unsigned char near*,unsigned int)
+	rput(FILE near*)                  rput(FILE near*,long)
+	rseek(FILE near*,long)            rsize(FILE near*)
+
+BASRFIL2	size = 129
+	rget(FILE near*,void near*,unsigned int)  rput(FILE near*,void near*,unsigned int)
+
+BASSCAT 	size = 190
+	concat(unsigned int,...)        
+
+BASSCR  	size = 42
+	screen(int near&,int)           
+
+BASSTR0 	size = 1750
+	operator +(const unsigned char near*,bstring near&)  bstring::operator +(const unsigned char near*)
+	bstring::operator +(bstring near&)  bstring::operator =(const unsigned char near*)
+	bstring::operator =(bstring near&)  bstring::bstring(const unsigned char near*)
+	bstring::bstring(bstring near&)   bstring::bstring(unsigned int)
+	bstring::bstring()                bstring::operator +=(const unsigned char near*)
+	bstring::operator +=(bstring near&)  bstring::clear()
+	bstring::fill(unsigned int,unsigned char)  bye()
+
+BASSTR1 	size = 695
+	bstring::mid(bstring near&,unsigned int,unsigned int)  left(bstring near&,unsigned int)
+	mid(bstring near&,unsigned int,unsigned int)  right(bstring near&,unsigned int)
+
+BASSTR2 	size = 913
+	chr(int)                          inkey()
+	instr(bstring near&,bstring near&,unsigned int)  lcase(bstring near&)
+	space(unsigned int)               str(double)
+	string(unsigned int,unsigned char)  ucase(bstring near&)
+	val(bstring near&)              
+
+BASSTR3 	size = 161
+	input(unsigned int)               input(unsigned int,FILE near*)
+
+BASSTR4 	size = 615
+	finps(FILE near*)                 flinps(FILE near*)
+	inps()                            linps()
+
+BASSTR5 	size = 471
+	_mk(double)                       _mk(float)
+	_mk(int)                          _mk(long)
+	bstring::lset(bstring near&)      bstring::rset(bstring near&)
+
+BASSTR6 	size = 222
+	hex(long)                         oct(long)
+
+BASSTR7 	size = 594
+	operator +(const unsigned char,bstring near&)  bstring::operator +(const unsigned char)
+	bstring::operator =(const unsigned char)  bstring::operator +=(const unsigned char)
+
+BASSTR8 	size = 333
+	bstring::lastblank()              bstring::lastrblank()
+	ltrim(bstring near&)              rtrim(bstring near&)
+
+BASSTR9 	size = 662
+	input(FILE near*,bstring near&)   line_input(FILE near*,bstring near&)
+
+BASTMR  	size = 104
+	timer()                         
+
+BASUSING	size = 666
+	using(bstring near&)            

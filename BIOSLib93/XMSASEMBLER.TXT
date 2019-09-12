@@ -1,0 +1,285 @@
+          Modu’ obs’ugi pami‘ci XMS (eXtended Memory Specification)
+                        wersja 1.1 dla Turbo C 2.0
+                    Napisany przez Krzysztofa Klimczaka
+                               1992.09
+
+
+Modu’ ten zosta’ napisany, aby umo§liwi wykorzystanie pami‘ci XMS z poziomu
+jezyka Turbo C 2.0 (oraz ka§dej wersji wy§szej kompilator¢w firmy Borland)
+Mo§e on by swobodnie rozpowszechniany, pod warunkiem jednak, §e nie b‘dzie
+pobierana za niego §adna op’ata w jakiejkolwiek postaci.
+
+Zosta’ on napisany na podstawie opisu funkcji XMS zawartej w ksi†§ce:
+"The Programmer's PC Sourcebook" autorstwa Thom-a Hogan-a.
+Wykorzystuje on komunikacje z pami‘ci† extended w’anie wed’ug standardu
+XMS, stworzonego w 1988 roku przez firmy Microsoft, Intel, AST Research oraz
+Lotus Corp., dla obs’ugi tej pami‘ci w systemie MS-DOS-a.
+Pozwala on na korzystanie z pamieci XMS w postaci:
+- EMB (Extended Memory Block)
+- UMB (Upper    Memory Block)
+- HMA (High Memory Area)
+w komputerach opartych na koprocesorach 80286,80386 i 80486.
+
+Dla wyjanienia przedstawiam opis pamieci w systemie MS-DOS:
+
+
+      ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ 0K                \
+      ³                 ³                    |   //pami‘c podstawowa
+      ³   Base Memory   ³                    |
+      ³                 ³                    |   Pami‘ konwencjonalna
+      ³                 ³                    |
+      ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´ 640K               |
+      ³  Upper Memory   ³                    |   // bloki g¢rnej pami‘ci
+      ³  Blocks (UMB)   ³                   /
+      ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´ 1024K (1MB)
+      ³   High Memory   ³                   \   // obszar 'wysokiej' pami‘ci
+      ³   Area  (HMA)   ³                    |
+      ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´ 1088K              |
+      ³                 ³                    |
+      ³                 ³                    |
+      .                 .                    |
+      .                 .                    |   Pami‘ extended
+      . Extended Memory .                    |
+      ³  Blocks  (EMB)  ³                    |
+      ³                 ³                    |
+      ³                 ³                    |
+      ³                 ³                    |
+      ³                 ³                    |
+      ³                 ³                   /
+      ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ 16384K (16MB)
+
+Specyfikacja XMS pozwala na:
+- allokowanie, zwalnianie i zmienianie d’ugci blok¢w pami‘ci
+- kontrol‘ nad lini† adresow† A20 procesora
+- dost‘p do pami‘ci UMB,HMA i EMB
+
+Aby mo§na by’o korzysta z tych fukcji musimy mie zainstalowany driver
+zarz†dzaj†cy pami‘ci† XMS, tzw. XMM (eXtended Memory Manager).
+Przyk’adami dw¢ch najcz‘ciej u§ywanych driver-¢w s†:
+
+1. HIMEM.SYS - dostarczany przez firm‘ Microsoft
+2. QEMM.SYS  - firmy Quarterdeck
+
+Obydwa z nich stosuj† standard obs’ugi pami‘ci XMS.
+Dzi‘ki temu modu’owi wykorzystanie funkcji i pami‘ci XMS staje si‘ bardzo
+proste, umo§liwiaj†c dost‘p do cz‘sto olbrzymiej iloci pami‘ci operacyjnej.
+
+Przed opisem poszczeg¢lnych funkcji chcia’em zwr¢ci uwag‘ na trzy rzeczy:
+1. aby program dzia’a’ musi by aktywny program zarz†dzaj†cy pami‘ci† XMS
+   np. HIMEM.SYS.
+2. przed wywo’aniem jakiejkolwiek funkcji, nale§y , najlepiej na samym
+   pocz†tku programu, wywo’a procedur‘   XMSInit();   , kt¢ra inicjuje
+   zmienne, umo§liwiaj†c dost‘p do funkcji obs’ugi pami‘ci XMS.
+3. w czasie dzia’anie programu dost‘pna jest zmienna XMSError, kt¢ra zawiera
+   numer b’edu lub warto 0 gdy wszystko by’o OK. Warto tej zmiennej
+   powinna by sprawdzona po ka§dej niepewnej operacji zwi†zanej z XMM.
+   Gdy nie wiemy co jest 'pewn†' operacj† najlepiej sprawdza zawsze.
+
+
+Wszelkie uwagi prosz‘ kierowa na adres:
+
+Krzysztof Klimczak
+ ul. Skalista 61
+  25-382 Kielce
+
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+Kr¢ktki opis procedur:
+
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                          int XMSInit( void )
+
+Procedura inicjacji rodowiska pracy ca’ego modu’u. Musi zosta wywo’ana
+przed u§yciem dowolnej funkcji zwi†zanej z pami‘cia XMS.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                         int  XMMPresent( void )
+
+Zwraca jeden, jeli XMM jest obecny i aktywny, zero w przeciwnym wypadku
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                       char *XMSGetError( int Error )
+
+
+Zwraca wska¦nik na odpowiedni komunikat o wyst†peniu b’‘du.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                       unsigned GetXMSVersion( void )
+
+Zwraca numer specyfikacji XMS jak† implementuje aktualny driver, w postaci
+liczby ca’kowitej, tzn. warto 203 oznacza wersj‘ 2.03
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                       unsigned GetXMMVersion( void )
+
+Zwraca wewn‘trzny numer aktualnego driver-a w postaci liczby ca’kowitej,
+tzn. warto 403 oznacza wersj‘ 4.03
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                        unsigned XMSMemAvail( void )
+
+Zwraca ca’kowit† ilo dost‘pnej pami‘ci XMS w kilobajtach.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                        unsigned XMSMaxAvail( void )
+
+Zwraca najd’u§szy, dost‘pny blok w pami‘ci XMS.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                 unsigned XMSAllocate(unsigned BlockSize)
+
+Allokuje (rezerwuje) blok pami‘ci XMS o rozmiarze BlockSize kilobajt¢w
+i zwraca uchwyt (ang. handle) tego bloku. Identyfikuje on jednoznacznie
+dany blok pami‘ci i jest u§ywany przy wywo’ywaniu innych funkcji.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                      int XMSFree(unsigned EMBHandle)
+
+Zwalnia blok pami‘ci odpowiadaj†cy uchwytowi EMBHandle.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+int MoveToXMS(unsigned EMBHandle, void far *Source, unsigned long BlockLength)
+
+Przesy’a do bloku pami‘ci o uchwycie EMBHandle,blok z pami‘ci konwencjonalnej
+zaczynaj†cy si‘ od adresu Source i maj†cy d’ugo BlockLength.( w bajtach )
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+int MoveFromXMS(unsigned EMBHandle, void far *Destin, unsigned long BlockLength)
+
+Przesy’a z bloku pami‘ci o uchwycie EMBHandle,blok do pami‘ci konwencjonalnej
+zaczynaj†cy si‘ od adresu Source i maj†cy d’ugo BlockLength.( w bajtach )
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+          int XMSResize(unsigned EMBHandle, unsigned NewBlockSize)
+
+Pozwala na zmian‘ d’ugoci bloku pami‘ci EMB o uchwycie EMBHandle na now†
+warto NewBlockSize ( w kilobajtach ).
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                unsigned long LockEMB( unsigned EMBHandle )
+
+Zabezpiecza blok pami‘ci o uchwycie EMBHandle. Ka§de wyw’anie dla tego
+samego bloku powoduje zwi‘kszenie odpowiadaj†cego mu licznika. Ochrona
+bloku polega m.in. na niemo§noci usuni‘cia takiego bloku.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                  int UnlockEMB( unsigned EMBHandle )
+
+Odbezpiecza blok pami‘ci o uchwycie EMBHandle. Nie jest to r¢wnoznaczne
+z umo§liwieniem operacji usuni‘cia bloku. Jest to mo§liwe dopiero po
+tylukrotnym jej wywo’aniu, ile razy by’a wywo’ywana funkcja LockEMB dla
+danego bloku pami‘ci.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                unsigned EMBGetSize( unsigned EMBHandle )
+
+Zwraca wielko bloku o uchwycie EMBHandle w kilobajtach.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                  int EMBGetLock( unsigned EMBHandle )
+
+Zwraca warto oznaczaj†c† ile razy blok pami‘ci XMS o uchwycie EMBHandle
+byl zabezpieczany, a dok’adniej ile razy nale§y go jeszcze odbezpieczy
+funkcj† UnlockEMB by m¢c go np. usun†.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+               int EMBGetAvailHands( unsigned EMBHandle )
+
+Zwraca ilo jeszcze dost‘pnych uchwyt¢w, tzn. ile blok¢w pami‘ci mo§emy
+jeszcze zarezerwowa (chodzi o ilo blok¢w, a nie o ich rozmiar).
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                       int HMAStatus( void )
+
+Zwraca 1 jeli istnieje pami‘ HMA, 0 w przeciwnym przypadku.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                  int HMAAllocate( unsigned Size )
+
+Rezerwuje Size bajt¢w w obszarze HMA. Maksymalna wielko pami‘ci HAM
+wynosi 64K - 16 bajt¢w = 65520 bajt¢w.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                        int HMAFree( void )
+
+Zwalnia pami‘c w obszarze HMA.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                    int A20GlobalEnable( void )
+
+Uaktywnia globalnie lini‘ adresow† A20 procesora. Procedura ta powinna
+by u§ywana tylko przez programy, kt¢re pomylnie zlokalizowa’y HMA.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                    int A20GlobalDisable( void )
+
+Dezaktywuje globalnie lini‘ adresow† A20 procesora. Procedura powinna
+by u§ywana tylko przez programy, kt¢re nie posiadaj† HMA.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                     int A20LocalEnable( void )
+
+Uaktywnia lokalnie lini‘ adresow† A20 procesora. Procedura ta powinna
+by u§ywana tylko przez programy, kt¢re nie posiadaj† HMA.
+Linia adresowa A20 powinna by wy’†czona przed zwr¢ceniem kontroli systemowi.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                    int A20LocalDisable( void )
+
+Dezaktywuje lokalnie lini‘ adresow† A20 procesora. Procedura powinna
+by u§ywana tylko przez programy, kt¢re nie posiadaj† HMA.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                     int A20GetStatus( void )
+
+Zwraca stan linii adresowej A20 procesora. 1 - linia aktywna,0 - nieaktywna.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+       unsigned UMBAllocate( unsigned ParSize, unsigned *UMBSegment)
+
+Allokuje (rezerwuje) blok pami‘ci o rozmiarze ParSize (w pragrafach)
+w obszarze UMB pami‘ci. Segment zarezerwowanego bloku przekazywany jest
+w zmiennej odpowiadaj†cej w wywo’aniu UMBSegment.
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                 int UMBFree( unsigned UMBSegment)
+
+Zwalnia zarezerwowany wczeniej blok pami‘ci w obszarze UMB. Segment
+zwalnianego bloku podawany jest w UMBSegment.
+
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                      Koniec opisu funkcji
+
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+

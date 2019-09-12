@@ -1,0 +1,84 @@
+Publics by module
+
+BASCINT 	size = 209
+	cint(double)                    
+
+BASDATE 	size = 255
+	date_s()                          time_s()
+
+BASDIR  	size = 168
+	curdir(int)                     
+
+BASDOS  	size = 251
+	command_line()                    files(bstring far&)
+
+BASDSEG 	size = 17
+	_init_def_seg()                   __def_seg_
+
+BASRFIL1	size = 1748
+	rclose(FILE far*)                 rfield(FILE far*,unsigned int,...)
+	rget(FILE far*)                   rget(FILE far*,long)
+	rlocation(FILE far*)              ropen(const unsigned char far*,unsigned int)
+	rput(FILE far*)                   rput(FILE far*,long)
+	rseek(FILE far*,long)             rsize(FILE far*)
+
+BASRFIL2	size = 171
+	rget(FILE far*,void far*,unsigned int)  rput(FILE far*,void far*,unsigned int)
+
+BASSCAT 	size = 262
+	concat(unsigned int,...)        
+
+BASSCR  	size = 48
+	screen(int far&,int)            
+
+BASSTR0 	size = 2730
+	operator +(const unsigned char far*,bstring far&)  bstring::operator +(bstring far&)
+	bstring::operator +(const unsigned char far*)  bstring::operator =(bstring far&)
+	bstring::operator =(const unsigned char far*)  bstring::bstring(bstring far&)
+	bstring::bstring(const unsigned char far*)  bstring::bstring(unsigned int)
+	bstring::bstring()                bstring::operator +=(bstring far&)
+	bstring::operator +=(const unsigned char far*)  bstring::clear()
+	bstring::fill(unsigned int,unsigned char)  bye()
+
+BASSTR1 	size = 903
+	bstring::mid(bstring far&,unsigned int,unsigned int)  left(bstring far&,unsigned int)
+	mid(bstring far&,unsigned int,unsigned int)  right(bstring far&,unsigned int)
+
+BASSTR2 	size = 1180
+	chr(int)                          inkey()
+	instr(bstring far&,bstring far&,unsigned int)  lcase(bstring far&)
+	space(unsigned int)               str(double)
+	string(unsigned int,unsigned char)  ucase(bstring far&)
+	val(bstring far&)               
+
+BASSTR3 	size = 213
+	input(unsigned int)               input(unsigned int,FILE far*)
+
+BASSTR4 	size = 710
+	finps(FILE far*)                  flinps(FILE far*)
+	inps()                            linps()
+
+BASSTR5 	size = 622
+	_mk(double)                       _mk(float)
+	_mk(int)                          _mk(long)
+	bstring::lset(bstring far&)       bstring::rset(bstring far&)
+
+BASSTR6 	size = 302
+	hex(long)                         oct(long)
+
+BASSTR7 	size = 834
+	operator +(const unsigned char,bstring far&)  bstring::operator +(const unsigned char)
+	bstring::operator =(const unsigned char)  bstring::operator +=(const unsigned char)
+
+BASSTR8 	size = 414
+	bstring::lastblank()              bstring::lastrblank()
+	ltrim(bstring far&)               rtrim(bstring far&)
+
+BASSTR9 	size = 909
+	input(FILE far*,bstring far&)     line_input(FILE far*,bstring far&)
+
+BASTMR  	size = 108
+	timer()                         
+
+BASUSING	size = 721
+	using(bstring far&)             

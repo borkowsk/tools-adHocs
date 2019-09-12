@@ -1,0 +1,34 @@
+"Source level debuging" - Jeûli opcja jest wíÜczona to kompilator C++
+	generuje dodatkowÜ informacje pozwalajÜcÜ na dubuging na poziomie
+	kodu ¶r¢díowego C++ . Program skompilowany z tÜ opcjÜ zawiera
+	tzw tablicë symboli - czësto wiëkszÜ od samego kodu.
+
+"Generate for speed" - Kompilator C++ dokonuje wielu optymalizacji kodu
+	wynikowego. Wiele z nich zaleßne jest od tego czy celem jest
+	program jak najmniejszy, czy jak najszybszy. OpcjÜ przyjmowanÜ
+	domyûlnie jest generacja jak najbardziej zwartego kodu. WíÜczenie
+	tej opcji powoduje generowanie jak najszybszego kodu.
+
+"80286 Instructions" -  Procesor 80286 posiada wiele instrukcji nie
+	istniejÜcych w procesorach 8088 i 8086. UmoßliwiajÜ one
+	wygenerowanie lepszego kodu wykonywalnego, ale tak powstaíy
+	program moße pracowaç jedynie na komputerach z procesorem
+	80286 , 80386 i i486 .
+
+"80287 Instructions" - Do zestawu komputerowego opartego na procesorze
+	80x86 moße byç doíÜczony koprocesor artmetyczny serii 80x87.
+	Programy w jëzyku Borland C++ majÜ dwa alternatywne zestawy
+	operaci zmiennoprzecinkowych - bibliotekë odwoíujÜcÜ sië
+	bezpoûrenio i tzw emulator, kt¢ry w razie braku koprocesora
+	potrafi przeprowadziç obliczenia przy ußyciu procesora gí¢wnego.
+	Uniwersalnoûç ta jednak kosztuje - biblioteka ta jest wolniejsza
+	przy pracy z koprocesorem niß biblioteka dedykowana. Jeûli program
+	ma pracowaç wyíÜcznie na maszynach z koprocesorem lub z procesorem
+	i486 (majÜcym zintegerowany koprocesor) to naleßy tÜ opcjë ustawiç
+	na "Yes" .
+
+"Use BCCX compiler" - Na komputerach z procesorem 80386 i i486 z rozsÜdnÜ
+	iloûciÜ wolnej pamiëci extended moßliwe jest uruchomienie wersji
+	kompilatora Borland C++ pracujÜcej w trybie chronionym - czyli
+	bez DOS-owego ograniczenia na rozmiar pamiëci. Kompilator ten
+	dziaía szybciej od wersji dla trybu rzeczywistego (bcc).
