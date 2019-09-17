@@ -6,4 +6,4 @@ Posłużył potem do wykonania demonstracyjnych filmików na jedno z promocyjnyc
 z kandydatami na studentów SWPS (nie był to już SPIK, ale chyba Psychologia Nowych Technologii)
 
 Filmiki te używałem potem też trochę do celów "dydaktycznych" i chyba są gdzieś dostępne 
-w internecie (na YouTube?). 
+w internecie, choć na razie nie odnalazłem dawnych udostępnień. 

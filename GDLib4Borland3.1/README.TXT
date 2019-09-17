@@ -14,3 +14,7 @@ protected mode (DJGPP).
 If you want, get it for all non-commercial purposes.
 
  			Wojciech Borkowski
+
+PS-PL: Biblioteka GD była jedną z pierwszych bibliotek graficznych 
+stosowanych w aplikacjach WWW, ale mogła się też przydawać do
+innych celów bo potrafiła wczytywać i zapisywać pliki GIF.
