@@ -1,0 +1,219 @@
+Publics by module
+
+BIOSCOLO     size = 682
+	_BiosGetRGBBlock                  _BiosGetVGAPalette
+	_BiosSetRGB                       _BiosSetRGBBlock
+	_ColorContinum                    _FuncContinum
+
+BIOSGRAF     size = 2565
+	CheckScreenSize()                 IsGraph()
+	ReadAndSetParameters()            enable128KB()
+	setCRTto400()                     setactivepage320x400(char)
+	setstart320x400(unsigned int)     setvisualpage320x400(char)
+	_BIOSMODE                         _BiosCleardevice
+	_BiosDevices                      _BiosGetPixel
+	_BiosPage                         _BiosScreen
+	_BiosSetPROA                      _BiosSetPROB
+	_BiosSetPixel                     _CHARMATTRIX
+	_COLOR                            _COLS
+	_DEVICE                           _EditParameters
+	_GRAPH                            _LINELEN
+	_MAXX                             _MAXY
+	_MODE                             _MODES
+	_NUMCOLOR                         _NUMPAGE
+	_PAGE                             _PUTMODE
+	_PrintModeInfo                    _RATIOXY
+	_SCREEN                           _TMAXX
+	_TMAXY                            _XRATIO
+	_YRATIO                           _cards
+	_linecopy                       
+
+BIOSHERC     size = 128
+	hercgraph()                     
+
+BIOSLINE     size = 2232
+	_BiosCircle                       _BiosClearBar
+	_BiosEllipse                      _BiosFillBar
+	_BiosFillCircle                   _BiosFillEllipse
+	_BiosLine                         _BiosScrollBar
+
+COLOR        size = 2286
+	color::Flag                       color::alloc(unsigned char,unsigned char,unsigned char)
+	color::allocnear(unsigned char,unsigned char,unsigned char)  color::cube(int)
+	color::cubea                      color::cubes
+	color::fromhardware()             color::getcube(unsigned char,unsigned char,unsigned char)
+	color::getnear(unsigned char,unsigned char,unsigned char)  color::locks
+	color::nodes                      color::tohardware()
+
+ISQRT        size = 124
+	_c_isqrt(unsigned long)           _isqrt
+
+MOUSE        size = 883
+	MouseDriver::AllocStateBufer()    MouseDriver::CheckStatus()
+	MouseDriver::ConditionalOff(int,int,int,int)  MouseDriver::DefaultMouseRoutine()
+	MouseDriver::DisableDriver()      MouseDriver::EnableDriver()
+	MouseDriver::GetAlternateInterruptSubrutine(MouseMask far&)  MouseDriver::GetButtonReleaseInformation(int,int far&,int far&)
+	MouseDriver::GetCRTPageNumber()   MouseDriver::GetMouseSensitivity(int far&,int far&,unsigned int far&)
+	MouseDriver::GlEvt                MouseDriver::HideCursor()
+	MouseDriver::Init(int)            MouseDriver::IsMouse
+	MouseDriver::LightPenEmulationOff()  MouseDriver::LightPenEmulationOn()
+	MouseDriver::ReadMouseMotionCounters(int far&,int far&)  MouseDriver::RestoreMouseDriverState()
+	MouseDriver::SaveMouseDriverState()  MouseDriver::SetAlternateInterruptSubrutine(void far*,MouseMask)
+	MouseDriver::SetCRTPageNumber(unsigned int)  MouseDriver::SetDoubleSpeedTreshould(unsigned int)
+	MouseDriver::SetGraphicsCursorBlock(int,int,void far*)  MouseDriver::SetInterruptSubrutine(void far*,MouseMask)
+	MouseDriver::SetMickeyPixelRatio(unsigned int,unsigned int)  MouseDriver::SetMinMaxHorizontalPosition(int,int)
+	MouseDriver::SetMinMaxVerticalPosition(int,int)  MouseDriver::SetMouseCursorPosition(int,int)
+	MouseDriver::SetMouseInterruptRate(unsigned int)  MouseDriver::SetMouseSensitivity(int,int,unsigned int)
+	MouseDriver::SetTextCursor(int,unsigned int,unsigned int)  MouseDriver::ShowCursor()
+	MouseDriver::SoftwareReset()      MouseDriver::SwapInterrruptSubrutines(void far*,MouseMask,...
+	MouseDriver::hardware           
+
+PICTDERR     size = 119
+	error(char far*,int)            
+
+PICTDFFT     size = 3072
+	_defaultfonttable               
+
+PICTDOS      size = 285
+	palette::fromhardware()           palette::tohardware(unsigned char)
+	palette::tohardware()             translinecopy(unsigned char far*,unsigned char far*,unsigned int)
+
+PICTFONT     size = 240
+	font8bit::OutTextXY(picture far&,long,long,const char far*)  font8bit::TextHight(const char far*)
+	font8bit::TextWidth(const char far*)
+
+PICTMEM      size = 1166
+	mem_picture::CalcPixelAddr(unsigned long far&,unsigned long far&) const  mem_picture::GetPicture(const picture far&,long,long)
+	mem_picture::PlotPixel(unsigned long,unsigned long)  mem_picture::ShiftDown(long)
+	mem_picture::ShiftLine(long,long,long)  mem_picture::ShiftUp(long)
+
+PICTOPER     size = 1948
+	picture::operator <<(double)      picture::operator <<(int)
+	picture::operator <<(const unsigned char far*)  picture::operator <<(const char far*)
+	picture::operator <<(unsigned char)  picture::operator <<(unsigned int)
+	picture::operator <<(char)      
+
+PICTPALL     size = 1672
+	palette::palette(unsigned int,unsigned int)  palette::~palette()
+	palette::Alloc(RGB,unsigned int)  palette::ColorDist(RGB far&,RGB far&)
+	palette::Free(unsigned char)      palette::FromCube(RGB)
+	palette::Lock(unsigned char)      palette::Unlock(unsigned char)
+	palette::Values(unsigned char)    palette::cube(int)
+	palette::grayscale(int)         
+
+PICTURE      size = 6301
+	picture::AllDefault()             picture::Clear()
+	picture::DrawEllipse(long,long,long,long)  picture::DrawLine(long,long,long,long)
+	picture::Fill(unsigned char)      picture::FillEllipse(long,long,long,long)
+	picture::FillLine(long,long,long)  picture::FillRectAngle(long,long,long,long)
+	picture::FlowPicture(const mem_picture far&)  picture::GetLine(unsigned char far*,long,long,long) const
+	picture::PixelAddr(long far&,long far&) const  picture::PutLine(long,long,long,const unsigned char far*)
+	picture::PutPicture(long,long,const mem_picture far&)  picture::SetCopyMode(copymode)
+	picture::ShiftDown(long)          picture::ShiftLeft(long)
+	picture::ShiftLine(long,long,long)  picture::ShiftRight(long)
+	picture::ShiftUp(long)            screen::StartMenu()
+
+PICTVAR      size = 293
+	font::CurentNumber                font::FontTypes
+	font::NumberOfTypes               screen::InGraph
+	screen::NumberOfTypes             screen::OldMode
+	screen::ScreenTypes               _DefaultFont
+	_DefaultPalette                 
+
+PICTVES1     size = 366
+	ScreenVESA::CalcPixelAddr(unsigned long far&,unsigned long far&) const  ScreenVESA::PlotPixel(unsigned long,unsigned long)
+
+PICTVESA     size = 661
+	ScreenVESA::ScreenVESA()          ScreenVESA::StartVESA()
+
+PICTVG13     size = 251
+	ScreenVGA13::ScreenVGA13()      
+
+PIPEK        size = 117
+	Interface::CheckClik()            Interface::Getcomm()
+	Interface::IsMouse                Interface::MousePresent()
+	Interface::UnVisCursor()          Interface::VisCursor()
+	Interface::gdriver                Interface::key
+	Interface::mosX                   Interface::mosY
+
+SFLOAT       size = 9
+	sfloat<int>::MAXVALUE             sfloat<long>::MAXVALUE
+	sfloat<short>::MAXVALUE           sfloat<char>::MAXVALUE
+
+VESA256      size = 3716
+	_CircleVESA                       _ClearBarVESA
+	_CleardeviceVESA                  _EllipseVESA
+	_FillBarVESA                      _FillCircleVESA
+	_FillEllipseVESA                  _LineVESA
+	_PutMapVESA                       _SetPixelVESA
+
+VESABIOS     size = 675
+	IsAvailable(unsigned int)         MyAbort()
+	_ATR_A                            _ATR_B
+	_BANKINA                          _BANKINB
+	_BANK_NUM                         _ChangeBank
+	_GRANULARITY                      _MULTIBANK
+	_VesaScreen                       _VesaSetParameters
+	_WINA                             _WINB
+	_WIN_SIZE                       
+
+VGA13H       size = 2880
+	_Circle13H                        _ClearBar13H
+	_Cleardevice13H                   _Ellipse13H
+	_FillBar13H                       _FillCircle13H
+	_FillEllipse13H                   _Line13H
+	_PutMap13H                        _SetPixel13H
+
+VGA16C       size = 3843
+	_Circle16C                        _ClearBar16C
+	_Cleardevice16C                   _Ellipse16C
+	_FillBar16C                       _FillCircle16C
+	_FillEllipse16C                   _Line16C
+	_SetPixel16C                    
+
+VGA3240      size = 3162
+	_Circle320x400                    _ClearBar320x400
+	_Cleardevice320x400               _Ellipse320x400
+	_FillBar320x400                   _FillCircle320x400
+	_FillEllipse320x400               _Line320x400
+	_PutMap320x400                    _SetPixel320x400
+
+VGASERV      size = 245
+	_ManualSetService               
+
+VGASERV1     size = 180
+	imageerror(long,long,int,int,unsigned char far*)  _GRSERVICE
+	_circle                           _clearbar
+	_cleardevice                      _ellipse
+	_fillbar                          _fillcircle
+	_fillellipse                      _getmap
+	_graphicsBIOS                     _line
+	_putmap                           _setpixel
+
+VGASERV2     size = 130
+	_graphics16C                    
+
+VGASERV3     size = 130
+	_graphics13H                    
+
+VGASERV4     size = 130
+	_graphics320x400                
+
+VGASERV5     size = 130
+	_graphicsPRA                    
+
+VGASERV6     size = 130
+	_graphicsVESA                   
+
+VGATOP       size = 3893
+	_CirclePRA                        _ClearBarPRA
+	_CleardevicePRA                   _EllipsePRA
+	_FillEllipsePRA                   _LinePRA
+	_SetPixelPRA                    
+
+WAITFRAM     size = 35
+	_wait_for_frame                 
+
+_ISVESA      size = 96
+	_IsVesa                           _LISTATRYBOW
+	_PUSTA                          
