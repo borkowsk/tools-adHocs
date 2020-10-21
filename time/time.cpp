@@ -1,8 +1,9 @@
-/// Duration example
+/// Date & time & miliseconds & durations example
 // https://stackoverflow.com/questions/19555121/how-to-get-current-timestamp-in-milliseconds-since-1970-just-the-way-java-gets
 // https://stackoverflow.com/questions/41077377/how-to-get-current-time-in-milliseconds/41077420
 // https://en.cppreference.com/w/cpp/chrono/duration
 // https://man7.org/linux/man-pages/man2/gettimeofday.2.html
+// https://stackoverflow.com/questions/12835577/how-to-convert-stdchronotime-point-to-calendar-datetime-string-with-fraction
 ///
 #include <chrono>
 #include <ctime>
@@ -37,8 +38,8 @@ uint64_t timeSinceEpochMillisec()
   std::chrono::duration<double> sec = tp - 
                                     std::chrono::system_clock::from_time_t(tt) +
                                     std::chrono::seconds(tm.tm_sec);
-  //   Then print out that double using whatever format you prefer.
-  if (sec.count() < 10)
+  
+  if (sec.count() < 10) //   Then print out that double using whatever format you prefer.
         std::cout << '0';
   std::cout << std::fixed << sec.count() << '\n';
 
