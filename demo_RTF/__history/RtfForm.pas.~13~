@@ -1,0 +1,108 @@
+unit RtfForm;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ComCtrls;
+
+type
+  TMainForm = class(TForm)
+    GoButton: TButton;
+    InstructionRichEdit: TRichEdit;
+    procedure GoButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+const DefIniName='RtfView.ini';
+var
+  MainForm:TMainForm;
+  IniFileName:string;
+  RtfFileName:string='Instrukcja.rtf';
+  RtfHigh:integer=450;
+  RtfWidth:integer=600;
+  GoButtonCaption:string='Dalej';
+
+implementation
+
+{$R *.dfm}
+
+
+
+procedure TMainForm.FormCreate(Sender: TObject);
+var inifile:textFile;
+    intpom:integer;
+    strpom:string;
+    blad:boolean;
+begin
+IniFileName:=ParamStr(1);
+if IniFileName='' then
+      IniFileName:=DefIniName;
+
+if FileExists(IniFileName) then
+begin
+  AssignFile(inifile,IniFileName);
+  Reset(inifile);
+
+  strpom:='';
+  Readln(inifile,strpom);
+  if strpom<>'' then
+      RtfFileName:=strpom;
+
+  intpom:=-1;
+  Readln(inifile,intpom);
+  if intpom > 10 then
+    RtfWidth:=intpom;
+
+  intpom:=-1;
+  Readln(inifile,intpom);
+  if intpom > 10 then
+    RtfHigh:=intpom;
+
+  strpom:='';
+  Readln(inifile,strpom);
+  if strpom<>'' then
+      GoButtonCaption:=strpom;
+
+  CloseFile(inifile);
+end
+else
+begin
+ Application.MessageBox('Nie odnaleziono pliku konfiguracyjnego',PChar(IniFileName));
+ Application.Terminate;
+end;
+
+//Próba wyœwietlenia instrukcji
+blad:=false;
+try
+if FileExists(RtfFileName) then
+  self.InstructionRichEdit.Lines.LoadFromFile(RtfFileName)
+  else blad:=true; //Tu siê obejdzie bez Exception, ale te¿ siê okno nie wyœwietli
+except
+  on E: Exception do  //Ignoruje te¿ inne b³êdy ale o nich iunformuje
+      blad:=true;
+end;
+
+if blad then
+begin
+  Application.MessageBox('Nie mo¿na otworzyæ pliku z tekstem',PChar(RtfFileName));
+  Application.Terminate;
+end;
+
+self.ClientHeight:=RtfHigh;
+self.ClientWidth:=RtfWidth;
+self.GoButton.Caption:=GoButtonCaption;
+
+end;
+
+procedure TMainForm.GoButtonClick(Sender: TObject);
+begin
+
+self.Close;
+end;
+
+end.

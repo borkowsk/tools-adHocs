@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2013-11-12 10:54:39.162.pas,C:\Users\borkowsk.Matiola\Documents\RAD Studio\Projects\Unit1.pas=S:\APLIKACJE\RTFWIN\RtfForm.pas</Transaction>
+    <Transaction>2013-11-12 10:54:39.162.dfm,C:\Users\borkowsk.Matiola\Documents\RAD Studio\Projects\Unit1.dfm=S:\APLIKACJE\RTFWIN\RtfForm.dfm</Transaction>
+    <Transaction>2013-11-12 10:54:52.611.dproj,C:\Users\borkowsk.Matiola\Documents\RAD Studio\Projects\Project1.dproj=S:\APLIKACJE\RTFWIN\RtfView.dproj</Transaction>
+  </Transactions>
+</BorlandProject>
